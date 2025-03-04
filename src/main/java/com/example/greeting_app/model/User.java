@@ -1,13 +1,14 @@
 package com.example.greeting_app.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
-@Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -20,7 +21,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String fullName;
+    public void setFullName(String fullName) {
+    }
 }
-

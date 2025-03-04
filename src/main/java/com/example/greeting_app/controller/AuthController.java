@@ -1,23 +1,29 @@
 package com.example.greeting_app.controller;
 
-import com.example.greeting_app.dto.RegisterRequest;
 import com.example.greeting_app.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-@CrossOrigin(origins = "*")
+
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String password = request.get("password");
+        String token = userService.loginUser(email, password);
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest request) {
-        String response = userService.registerUser(request);
-        return ResponseEntity.ok(response);
+        if (token != null) {
+            return ResponseEntity.ok(Map.of("token", token));
+        } else {
+            return ResponseEntity.status(401).body("Invalid email or password");
+        }
     }
 }
