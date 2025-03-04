@@ -2,26 +2,54 @@ package com.example.greeting_app.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+//@Configuration
+//@EnableWebSecurity
+//public class SecurityConfig {
+//
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/api/auth/**").permitAll() // Allow register and login APIs
+//                        .anyRequest().authenticated() // Other requests need authentication
+//                )
+//                .formLogin(Customizer.withDefaults()) // Enables default form login
+//                .httpBasic(Customizer.withDefaults()); // Enables Basic authentication
+//
+//        return http.build();
+//    }
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+//}
+
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // CSRF hata diya (H2 Console ke liye zaroori)
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) // H2 Console ke liye frameOptions disable
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/h2-console/**").permitAll() // H2 Console ko allow kiya
+                        .requestMatchers("/api/auth/**").permitAll() // Register/Login ko allow kiya
+                        .anyRequest().authenticated() // Baaki sab ke liye authentication
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .formLogin(Customizer.withDefaults()) // Default Login form enable
+                .httpBasic(Customizer.withDefaults()); // Postman ke liye Basic Authentication
 
         return http.build();
     }
@@ -30,9 +58,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
 }
+

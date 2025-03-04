@@ -1,26 +1,20 @@
 package com.example.greeting_app.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "USERS") // H2 Console me USERS table milega
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    private String name;
     private String email;
-
-    @Column(nullable = false)
     private String password;
-
-    public void setFullName(String fullName) {
-    }
 }
